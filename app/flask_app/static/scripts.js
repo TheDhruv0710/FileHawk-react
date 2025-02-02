@@ -1,248 +1,157 @@
-const searchBar = document.getElementById("search-bar");
-const tableRows = document.querySelectorAll("#task-table tbody tr");
-
-if (searchBar) {
-  searchBar.addEventListener("input", () => {
-    const searchTerm = searchBar.value.toLowerCase();
-
-    tableRows.forEach((row) => {
-      const taskData = row.textContent.toLowerCase();
-      if (taskData.includes(searchTerm)) {
-        row.style.display = "";
-      } else {
-        row.style.display = "none";
-      }
-    });
-  });
+// Function to fetch and display task counts on the dashboard
+function fetchTaskCounts() {
+    fetch('/current_jobs_data')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('running-tasks-count').textContent = data.running_jobs;
+            document.getElementById('failed-tasks-count').textContent = data.failed_jobs;
+            document.getElementById('waiting-tasks-count').textContent = data.waiting_jobs;
+            document.getElementById('retrying-tasks-count').textContent = data.retrying_jobs;
+        })
+        .catch(error => console.error('Error fetching task counts:', error));
 }
 
-// Function to open the calendar popup
-function openCalendarPopup() {
-  // Initialize flatpickr on the timeRange input field
-  flatpickr("#timeRange", {
-    // Options for the calendar (e.g., mode, dateFormat, etc.)
-    mode: "range",
-    dateFormat: "Y-m-d",
-    onClose: function(selectedDates, dateStr, instance) {
-      // Update the timeRange input field with the selected date range
-      document.getElementById("timeRange").value = dateStr;
-      // Close the calendar popup
-      closeCalendarPopup();
-    }
-  });
-
-  // Show the calendar popup
-  document.getElementById("calendarPopup").style.display = "block";
-}
-
-// Function to close the calendar popup
-function closeCalendarPopup() {
-  document.getElementById("calendarPopup").style.display = "none";
-}
-
-// Event listener for the calendar button
-const calendarButton = document.getElementById("calendarButton");
-if (calendarButton) {
-  calendarButton.addEventListener("click", openCalendarPopup);
-}
-
-// Fetch server keys and populate the dropdown
-fetch("/server_keys")
-  .then((response) => response.json())
-  .then((data) => {
-    const serverSelect = document.getElementById("server");
-    if (serverSelect) {
-      data.forEach((serverKey) => {
-        const option = document.createElement("option");
-        option.value = serverKey;
-        option.text = serverKey;
-        serverSelect.add(option);
-      });
-    }
-  })
-  .catch((error) => {
-    console.error("Error fetching server keys:", error);
-  });
-
-// Task Summary Chart
-function createTaskSummaryChart(chartType = "pie") {
-  const timeRange = document.getElementById("timeRange")?.value || "all";
-  const server = document.getElementById("server")?.value || "all";
-  const filePattern = document.getElementById("filePattern")?.value || "";
-
-  const url = `/task_summary?time_range=${timeRange}&server=${server}&file_pattern=${filePattern}`;
-  fetch(url)
-    .then((response) => response.json())
-    .then((data) => {
-      const ctx = document.getElementById("taskSummaryChart")?.getContext("2d");
-      if (window.taskSummaryChart) {
-        window.taskSummaryChart.destroy();
-      }
-
-      if (ctx) {
-        window.taskSummaryChart = new Chart(ctx, {
-          type: chartType,
-          data: {
-            labels: [
-              "Running Jobs",
-              "Failed Jobs",
-              "Waiting Jobs",
-              "Retrying Jobs",
-              "Other Jobs",
-            ],
-            datasets: [
-              {
-                data: [
-                  data.running_jobs,
-                  data.failed_jobs,
-                  data.waiting_jobs,
-                  data.retrying_jobs,
-                  data.total_jobs
-                    - (
-                      data.running_jobs +
-                      data.failed_jobs +
-                      data.waiting_jobs +
-                      data.retrying_jobs
-                    ),
-                ],
-                backgroundColor: [
-                  "#5cb85c",
-                  "#d9534f",
-                  "#777",
-                  "#f0ad4e",
-                  "#5bc0de",
-                ],
-              },
-            ],
-          },
-          options: {
-            // ... (add any options you want to customize the chart) ...
-          },
-        });
-      }
-    });
-}
-
-if (document.getElementById("taskSummaryChart")) {
-  createTaskSummaryChart();
-}
-
-const chartTypeSelect = document.getElementById("chartType");
-if (chartTypeSelect) {
-  chartTypeSelect.addEventListener("change", () => {
-    const selectedChartType = chartTypeSelect.value;
-    createTaskSummaryChart(selectedChartType);
-  });
-}
-
-// Recent Activity List with refresh and loading animation
-function updateRecentActivity() {
-  const activityList = document.getElementById("recentActivityList");
-  if (activityList) {
-    activityList.classList.add("loading");
-
-    fetch("/recent_activity")
-      .then((response) => response.json())
-      .then((data) => {
-        setTimeout(() => {
-          activityList.innerHTML = "";
-          if (Array.isArray(data)) {
-            data.forEach((item) => {
-              const li = document.createElement("li");
-              li.textContent = `Task "${item.filename}" ${item.status}`;
-              activityList.appendChild(li);
+// Function to fetch and display task execution trends
+function fetchTaskTrends() {
+    fetch('/task_summary')
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('taskTrendChart').getContext('2d');
+            const taskTrendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels, // Dates from the API
+                    datasets: [{
+                        label: 'Tasks Executed',
+                        data: data.taskCounts, // Task counts from the API
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        fill: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: {
+                        duration: 500,
+                    }
+                }
             });
-          } else {
-            console.error("Invalid data format for recent activity:", data);
-            activityList.innerHTML = "<li>Error loading recent activity.</li>";
-          }
-          activityList.classList.remove("loading");
-        }, 300);
-      })
-      .catch((error) => {
-        console.error("Error fetching recent activity:", error);
-        activityList.innerHTML = "<li>Error loading recent activity.</li>";
-        activityList.classList.remove("loading");
-      });
-  }
+        })
+        .catch(error => console.error('Error fetching task trends:', error));
 }
 
-if (document.getElementById("recentActivityList")) {
-  updateRecentActivity();
-  setInterval(updateRecentActivity, 5000);
+// Function to fetch and display task statistics
+function fetchTaskStatistics(selectedServer) {
+    fetch(`/task_summary?server=${selectedServer}`)
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('taskStatisticsChart').getContext('2d');
+            const taskStatisticsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels, // Labels from the API
+                    datasets: [{
+                        label: 'Task Statistics',
+                        data: data.statistics, // Statistics data from the API
+                        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: {
+                        duration: 500,
+                    }
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching task statistics:', error));
 }
 
-// Page transition animation
-const contentDiv = document.querySelector(".content");
-function handlePageTransition() {
-  if (contentDiv) {
-    contentDiv.classList.add("fade-out");
-    setTimeout(() => {
-      window.location.href = this.href;
-    }, 300);
-  }
+// Function to fetch and display recent activity
+function fetchRecentActivity() {
+    fetch('/recent_activity')
+        .then(response => response.json())
+        .then(data => {
+            const timelineContainer = document.getElementById('timelineContainer');
+            timelineContainer.innerHTML = ''; // Clear previous content
+            data.forEach(activity => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                item.innerHTML = `<h4>Task ID: ${activity.task_id}</h4><p>Status: ${activity.status}</p><p>Time: ${activity.timestamp}</p>`;
+                timelineContainer.appendChild(item);
+            });
+        })
+        .catch(error => console.error('Error fetching recent activity:', error));
 }
 
-const sidebarLinks = document.querySelectorAll(".sidebar a");
-sidebarLinks.forEach((link) => {
-  link.addEventListener("click", handlePageTransition);
+// Function to delete a task
+function deleteTask(taskId) {
+    if (confirm("Are you sure you want to delete this task?")) {
+        fetch(`/delete_task/${taskId}`, { method: 'DELETE' })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById(`task-${taskId}`).remove(); // Remove the task row from the table
+                } else {
+                    console.error('Failed to delete task');
+                }
+            })
+            .catch(error => console.error('Error deleting task:', error));
+    }
+}
+
+// Event listener for server filter change
+document.getElementById('serverFilter').addEventListener('change', function() {
+    const selectedServer = this.value;
+    fetchTaskStatistics(selectedServer); // Fetch statistics for the selected server
 });
 
-// Event listener for "Apply Filters" button
-const applyFiltersButton = document.getElementById("applyFilters");
-if (applyFiltersButton) {
-  applyFiltersButton.addEventListener("click", () => {
-    createTaskSummaryChart(
-      document.getElementById("chartType")?.value || "pie"
-    );
-  });
+// Event listener for apply filters button
+document.getElementById("applyFilters").addEventListener("click", function() {
+    const timeRange = document.getElementById("timeRange").value;
+    const server = document.getElementById("server").value;
+    const filePattern = document.getElementById("filePattern").value;
 
-// Trend Chart
-function createTrendChart() {
-  const timeRange = document.getElementById("timeRange")?.value || "all";
-  const server = document.getElementById("server")?.value || "all";
-  const filePattern = document.getElementById("filePattern")?.value || "";
+    const url = `/trend_data?time_range=${timeRange}&server=${server}&file_pattern=${filePattern}`;
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            const trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Successes',
+                            data: data.successes,
+                            borderColor: 'green',
+                            backgroundColor: 'rgba(0, 128, 0, 0.2)',
+                            fill: true,
+                        },
+                        {
+                            label: 'Failures',
+                            data: data.failures,
+                            borderColor: 'red',
+                            backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                            fill: true,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                        },
+                    },
+                },
+            });
+        })
+        .catch(error => console.error('Error fetching trend data:', error));
+});
 
-  const url = `/trend_data?time_range=${timeRange}&server=${server}&file_pattern=${filePattern}`;
-  fetch(url)
-    .then((response) => response.json())
-    .then((data) => {
-      const ctx = document.getElementById("trendChart")?.getContext("2d");
-      if (ctx) {
-        new Chart(ctx, {
-          type: "line", // You can change the chart type if needed
-          data: {
-            labels: data.labels,
-            datasets: [
-              {
-                label: "Successes",
-                data: data.successes,
-                borderColor: "green",
-                backgroundColor: "rgba(0, 128, 0, 0.2)",
-                fill: true,
-              },
-              {
-                label: "Failures",
-                data: data.failures,
-                borderColor: "red",
-                backgroundColor: "rgba(255, 0, 0, 0.2)",
-                fill: true,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            scales: {
-              y: {
-                beginAtZero: true,
-              },
-            },
-          },
-        });
-      }
-    });
-}
-
-if (document.getElementById("trendChart")) {
-  createTrendChart();
-}
+// Initialize the dashboard on page load
+document.addEventListener('DOMContentLoaded', function() {
+    fetchTaskCounts(); // Fetch task counts
+    fetchTaskTrends(); // Fetch task trends
+    fetchRecentActivity(); // Fetch recent activity
+});

@@ -1,70 +1,197 @@
 {% extends 'base.html' %}
-{% block title %}Welcome{% endblock %}
 {% block content %}
-<div class="card">
-  <h2 style="text-align: center; font-size: 2em">Hey There, {{ username }}!</h2>
-  <p style="text-align: center">Welcome to File Hawk.</p>
-  <p>Here's a quick overview of what you can do:</p>
-  <ul>
-    <li>
-      <b>Create Tasks:</b> Set up automated file monitoring tasks with custom
-      schedules and configurations.
-    </li>
-    <li>
-      <b>View Tasks:</b> Monitor the status of your tasks and track
-      successes and failures.
-    </li>
-    <li>
-      <b>Analyze Data:</b> Gain insights into file transfer patterns
-    </li>
-  </ul>
+<div class="dashboard">
+    <div class="logo-link">
+        <span class="logo-text">Welcome to File Hawk, {{ username }}!</span>
+    </div>
 
-</div>
+    <div class="card-container">
+        <div class="card running-tasks">
+            <h3>Running Tasks</h3>
+            <p id="running-tasks-count">0</p>
+        </div>
+        <div class="card failed-tasks">
+            <h3>Failed Tasks</h3>
+            <p id="failed-tasks-count">0</p>
+        </div>
+        <div class="card waiting-tasks">
+            <h3>Waiting Tasks</h3>
+            <p id="waiting-tasks-count">0</p>
+        </div>
+        <div class="card retrying-tasks">
+            <h3>Retrying Tasks</h3>
+            <p id="retrying-tasks-count">0</p>
+        </div>
+    </div>
 
-<div class="card-container">
-  <div class="card">
-    <h2>Task Summary</h2>
-    <canvas id="taskSummaryChart"></canvas>
-  </div>
-  <div class="card" id="recent-activity-card">
-    <h2>Recent Activity</h2>
-    <ul id="recentActivityList"></ul>
-  </div>
+    <div class="summary-container">
+        <div class="chart-container card" style="flex: 0 0 75%; height: 400px;"> <!-- Make the chart container larger -->
+            <canvas id="taskPieChart"></canvas>
+        </div>
+        <div class="execution-summary card" style="flex: 0 0 25%;"> <!-- Smaller execution summary -->
+            <h2 style="color: black;">Task Execution Summary</h2> <!-- Black heading -->
+            <div id="executionSummaryContainer" style="color: black;"> <!-- Black content -->
+                <p>No data available for task execution summary.</p> <!-- Placeholder message -->
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-container">
+        <img src="https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg" alt="Profile Picture" class="profile-pic"> <!-- Updated profile picture URL -->
+    </div>
 </div>
 
 <script>
-  // ... (Your existing JavaScript code) ...
-
-  function createTaskSummaryChart() {
+    // Fetch and display task counts
     fetch('/current_jobs_data')
-      .then(response => response.json())
-      .then(data => {
-        const ctx = document.getElementById("taskSummaryChart").getContext("2d");
-        if (ctx) {
-          new Chart(ctx, {
-            type: "pie",
-            data: {
-              labels: ["Completed Jobs", "Failed Jobs", "Waiting Jobs", "Retrying Jobs", "Other Jobs"],
-              datasets: [{
-                data: [
-                  data.running_jobs,
-                  data.failed_jobs,
-                  data.waiting_jobs,
-                  data.retrying_jobs,
-                  data.total_jobs - (data.running_jobs + data.failed_jobs + data.waiting_jobs + data.retrying_jobs)
-                ],
-                backgroundColor: ["#5cb85c", "#d9534f", "#777", "#f0ad4e", "#5bc0de"], // Customize colors
-              }],
-            },
-            options: {
-              // ... (add any options you want to customize the chart) ...
-            },
-          });
-        }
-      });
-  }
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('running-tasks-count').textContent = data.running_jobs;
+            document.getElementById('failed-tasks-count').textContent = data.failed_jobs;
+            document.getElementById('waiting-tasks-count').textContent = data.waiting_jobs;
+            document.getElementById('retrying-tasks-count').textContent = data.retrying_jobs;
+        })
+        .catch(error => console.error('Error fetching task counts:', error));
 
-  // Call the function to create the chart
-  createTaskSummaryChart();
+    // Fetch and display recent activity
+    fetch('/recent_activity')
+        .then(response => response.json())
+        .then(data => {
+            const timelineContainer = document.getElementById('timelineContainer');
+            timelineContainer.innerHTML = ''; // Clear previous content
+            data.forEach(activity => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                item.innerHTML = `<h4>Task ID: ${activity.task_id}</h4><p>Status: ${activity.status}</p><p>Time: ${activity.timestamp}</p>`;
+                timelineContainer.appendChild(item);
+            });
+        })
+        .catch(error => console.error('Error fetching recent activity:', error));
+
+    // Fetch and display task pie chart
+    fetch('/task_summary')
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('taskPieChart').getContext('2d');
+            const taskPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Task Distribution',
+                        data: data.statistics,
+                        backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                    label: function(tooltipItem) {
+                                        return tooltipItem.label + ': ' + tooltipItem.raw; // Show label and value
+                                    }
+                                }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom', // Position the legend at the bottom
+                                labels: {
+                                    font: {
+                                        size: 14 // Increase font size of labels
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+            // Update execution summary
+            const executionSummaryContainer = document.getElementById('executionSummaryContainer');
+            if (data.statistics.length > 0) {
+                executionSummaryContainer.innerHTML = ''; // Clear placeholder
+                data.labels.forEach((label, index) => {
+                    const summaryItem = document.createElement('div');
+                    summaryItem.innerHTML = `<strong>${label}:</strong> ${data.statistics[index]}`;
+                    executionSummaryContainer.appendChild(summaryItem);
+                });
+            } else {
+                executionSummaryContainer.innerHTML = '<p>No data available for task execution summary.</p>'; // Placeholder message
+            }
+        })
+        .catch(error => console.error('Error fetching task pie chart data:', error));
 </script>
+
+<style>
+    .summary-container {
+        display: flex; /* Flexbox for summary container */
+        justify-content: space-between; /* Space between chart and summary */
+        margin-top: 20px; /* Margin above summary */
+    }
+
+    .chart-container {
+        position: relative; /* Positioning for chart container */
+        height: 400px; /* Height of the chart */
+    }
+
+    .execution-summary {
+        max-width: 350px;
+        background-color: #ffffff; /* White background for summary card */
+        border-radius: 12px; /* Rounded corners */
+        padding: 20px; /* Padding for summary card */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for summary card */
+        color: #000; /* Text color for summary */
+        flex: 1; /* Allow summary to grow */
+        margin-left: 20px; /* Space between chart and summary */
+    }
+
+    .profile-container {
+        position: absolute; /* Positioning for profile picture */
+        top: 20px; /* Distance from top */
+        right: 20px; /* Distance from right */
+    }
+
+    .profile-pic {
+        width: 50px; /* Width of profile picture */
+        height: 50px; /* Height of profile picture */
+        border-radius: 50%; /* Circular profile picture */
+        border: 2px solid #fff; /* White border around profile picture */
+        cursor: pointer; /* Pointer cursor on hover */
+        transition: transform 0.3s ease; /* Transition for hover effect */
+    }
+
+    .profile-pic:hover {
+        transform: scale(1.1); /* Slightly enlarge on hover */
+    }
+
+    .card {
+        border-radius: 12px; /* Rounded corners */
+        padding: 20px; /* Padding for card */
+        color: #fff; /* Text color for card */
+        transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transition for shadow and scale */
+    }
+
+    .running-tasks {
+        background-color: #4CAF50; /* Green for running tasks */
+    }
+
+    .failed-tasks {
+        background-color: #F44336; /* Red for failed tasks */
+    }
+
+    .waiting-tasks {
+        background-color: #FF9800; /* Orange for waiting tasks */
+    }
+
+    .retrying-tasks {
+        background-color: #2196F3; /* Blue for retrying tasks */
+    }
+
+    /* Hover effects for cards */
+    .card:hover {
+        transform: scale(1.05); /* Slightly enlarge on hover */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Darker shadow on hover */
+    }
+</style>
 {% endblock %}

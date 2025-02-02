@@ -1,110 +1,154 @@
 {% extends 'base.html' %}
 
-<head>
-  <title>Create Task</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
-
-<body>
-  {% block content %}
-  <div class="content">
+{% block content %}
+<div class="content">
     <h1>Create New Task</h1>
-    <form method="POST" action="/add_task">
-      <div class="form-container">
-        <div class="form-column">
-          <div class="form-field">
-            <label for="task_id">Task ID:</label>
-            <input type="text" name="task_id" id="task_id" required>
-          </div>
-          <div class="form-field">
-            <label for="schedule">Cron Schedule:</label>
-            <input type="text" name="schedule" id="schedule" required>
-          </div>
-          <div class="form-field">
-            <label for="filename">Filename Pattern:</label>
-            <input type="text" name="filename" id="filename" required>
-          </div>
+    <form method="POST" action="/add_task" class="task-form">
+        <div class="form-container">
+            <div class="form-column">
+                <div class="form-field">
+                    <label for="task_id">Task ID:</label>
+                    <input type="text" name="task_id" id="task_id" required>
+                </div>
+                <div class="form-field">
+                    <label for="schedule">Cron Schedule:</label>
+                    <input type="text" name="schedule" id="schedule" required>
+                </div>
+                <div class="form-field">
+                    <label for="filename">Filename Pattern:</label>
+                    <input type="text" name="filename" id="filename" required>
+                </div>
+                <div class="form-field">
+                    <label for="filepath">File Path:</label>
+                    <input type="text" name="filepath" id="filepath" required>
+                </div>
+                <div class="form-field">
+                    <label for="module">Module:</label>
+                    <select name="module" id="module" required>
+                        <option value="">Select Module</option>
+                        <option value="Claims">Claims</option>
+                        <option value="Provider">Provider</option>
+                        <option value="Membership">Membership</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Chrysalis">Chrysalis</option>
+                        <option value="Prod-Services">Prod-Services</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-column">
+                <div class="form-field">
+                    <label for="server_key">Server Key:</label>
+                    <select name="server_key" id="server_key" required>
+                        <option value="">Select Server</option>
+                        {% for key in server_keys %}
+                            <option value="{{ key }}">{{ key }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="retries">Retries:</label>
+                    <input type="number" name="retries" id="retries" value="3" min="0">
+                </div>
+                <div class="form-field">
+                    <label for="retry_delay">Retry Delay (seconds):</label>
+                    <input type="number" name="retry_delay" id="retry_delay" value="60" min="0">
+                </div>
+                <div class="form-field">
+                    <label for="timeout">Timeout (seconds):</label>
+                    <input type="number" name="timeout" id="timeout" min="0">
+                </div>
+                <div class="form-field">
+                    <label for="dependent_server_keys">Dependency Server Key:</label>
+                    <select name="dependent_server_keys" id="dependent_server_keys" required>
+                        <option value="">Select Server</option>
+                        {% for key in dependent_server_keys %}
+                            <option value="{{ key }}">{{ key }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="command">Command:</label>
+                    <input type="text" name="command" id="command">
+                </div>
+            </div>
         </div>
-        <div class="form-column">
-          <div class="form-field">
-            <label for="filepath">File Path:</label>
-            <input type="text" name="filepath" id="filepath" required>
-          </div>
-
-          <div class="form-field">
-            <label for="module">Module:</label>
-            <input type="text" id="module" name="module">
-          </div>
-
-          <div class="form-field">
-            <label for="server_key">Server Key:</label>
-            <select name="server_key" id="server_key" required>
-              <option value="">Select Server</option>
-              {% for key in server_keys %}
-                <option value="{{ key }}">{{ key }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="form-field">
-            <label for="retries">Retries:</label>
-            <input type="number" name="retries" id="retries" value="3" min="0">
-          </div>
-        </div>
-        <div class="form-column">
-          <div class="form-field">
-            <label for="retry_delay">Retry Delay (seconds):</label>
-            <input type="number" name="retry_delay" id="retry_delay" value="60" min="0">
-          </div>
-          <div class="form-field">
-            <label for="timeout">Timeout (seconds):</label>
-            <input type="number" name="timeout" id="timeout" min="0">
-          </div>
-          <div class="form-field">
-            <label for="dependent_server_keys">Dependency Server Key:</label>
-            <select name="dependent_server_keys" id="dependent_server_keys" required>
-              <option value="">Select Server</option>
-              {% for key in dependent_server_keys %}
-                <option value="{{ key }}">{{ key }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          <div class="form-field">
-            <label for="command">Command:</label>
-            <input type="text" name="command" id="command">
-          </div>
-        </div>
-      </div>
-      <input type="submit" value="Create Task">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus"></i> <!-- Font Awesome icon -->
+        </button>
     </form>
-  </div>
+</div>
 
-  <script>
-    fetch('/server_keys')
-      .then(response => response.json())
-      .then(serverKeys => {
-        const serverKeySelect = document.getElementById('server_key');
+<style>
+    .task-form {
+        max-width: 1500px; /* Set a max width for the form */
+        margin: 0 auto; /* Center the form */
+        padding: 20px; /* Add padding */
+        background-color: #ffffff; /* White background color */
+        border-radius: 8px; /* Rounded corners */
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    }
 
-        serverKeys.forEach(key => {
-          const option1 = document.createElement('option');
-          option1.value = key;
-          option1.text = key;
-          serverKeySelect.add(option1);
-        });
-      });
+    .form-container {
+        display: flex; /* Use flex layout for form */
+        justify-content: space-between; /* Space between columns */
+        gap: 20px ; /* Space between columns */
+    }
 
-    fetch('/server_keys')
-      .then(response => response.json())
-      .then(serverKeys => {
-        const serverKeySelect = document.getElementById('dependent_server_keys');
+    .form-column {
+        flex: 1; /* Equal width for each column */
+    }
 
-        serverKeys.forEach(key => {
-          const option1 = document.createElement('option');
-          option1.value = key;
-          option1.text = key;
-          serverKeySelect.add(option1);
-        });
-      });
-  </script>
-  {% endblock %}
-</body>
-</html>
+    .form-field {
+        margin-bottom: 15px; /* Space between fields */
+    }
+
+    .form-field label {
+        display: block; /* Block display for labels */
+        margin-bottom: 5px; /* Space below labels */
+        font-weight: bold; /* Bold labels */
+        color: #333; /* Darker text color for better readability */
+    }
+
+    .form-field input,
+    .form-field select {
+        width: 100%; /* Full width for inputs and selects */
+        padding: 12px; /* Increased padding for better usability */
+        border: 1px solid #ccc; /* Border for inputs */
+        border-radius: 4px; /* Rounded corners */
+        box-sizing: border-box; /* Include padding and border in width */
+        font-size: 12px; /* Increased font size for better readability */
+    }
+
+    .form-field input:focus,
+    .form-field select:focus {
+        border-color: #007bff; /* Change border color on focus */
+        outline: none; /* Remove outline */
+    }
+
+    .btn {
+        background-color: #007bff; /* Button background color */
+        color: white; /* Button text color */
+        border: none; /* No border */
+        padding: 12px; /* Increased padding for button */
+        border-radius: 4px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor */
+        transition: background-color 0.3s; /* Transition for background color */
+        font-size: 16px; /* Increased font size for better readability */
+        width: 100%; /* Full width for button */
+        display: flex; /* Flexbox for icon alignment */
+        align-items: center; /* Center icon vertically */
+        justify-content: center; /* Center icon horizontally */
+    }
+
+    .btn:hover {
+        background-color: #0056b3; /* Darker background on hover */
+    }
+
+    .btn i {
+        margin-right: 8px; /* Space between icon and text */
+    }
+</style>
+
+<!-- Include Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+{% endblock %}

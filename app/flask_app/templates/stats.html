@@ -1,62 +1,172 @@
 {% extends 'base.html' %}
+
 {% block title %}Stats{% endblock %}
 {% block content %}
-
 <div class="content">
-  <h1>Stats</h1>
+    <h1>Statistics</h1>
 
-  <div class="chart-controls">
-  <div class="form-field">
-    <label for="timeRange">Time Range:</label>
-    <input type="text" id="timeRange" placeholder="Select date range" readonly />
-    <i id="calendarButton" class="far fa-calendar-alt calendar-icon"></i>
-  </div>
+    <div class="filter-container">
+        <div class="filter-item">
+            <label for="time-range">Time Range:</label>
+            <input type="text" id="time-range" placeholder="Select date range" class="date-picker" />
+        </div>
 
-    <div class="form-field">
-      <label for="server">Server:</label>
-      <select id="server">
-        <option value="all">All Servers</option>
-      </select>
+        <div class="filter-item">
+            <label for="server-select">Server:</label>
+            <select id="server-select" class="select-dropdown">
+                <option value="">Select a server</option>
+                {% for server_key in server_keys %}
+                    <option value="{{ server_key }}">{{ server_key }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-item">
+            <label for="file-pattern">File Pattern:</label>
+            <input type="text" id="file-pattern" placeholder="Enter file pattern" class="input-field" />
+        </div>
     </div>
 
-    <div class="form-field">
-      <label for="filePattern">File Pattern:</label>
-      <input type="text" id="filePattern" placeholder="Enter file pattern" />
+    <div id="graph-container">
+        <canvas id="statsGraph"></canvas>
+        <div id="placeholder" class="placeholder">
+            <p>No data available. Please select a time range and server.</p>
+        </div>
     </div>
-
-    <button id="applyFilters" class="apply-filters-button">Apply Filters</button>
-  </div>
-
-  <div id="calendarPopup" class="popup">
-    <div class="popup-content">
-      <span class="close-button" onclick="closeCalendarPopup()">&times;</span>
-    </div>
-  </div>
-
-  <div class="chart-container">
-    <canvas id="trendChart"></canvas>
-  </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 <script>
-  function openCalendarPopup() {
-    // Initialize flatpickr on the timeRange input field
-    flatpickr("#timeRange", {
-      mode: "range",
-      dateFormat: "Y-m-d",
-      onClose: function(selectedDates, dateStr, instance) {
-        document.getElementById("timeRange").value = dateStr;
-        closeCalendarPopup();
-      }
+    $(function() {
+        // Initialize datepicker
+        $("#time-range").datepicker({
+            range: true,
+            onSelect: function(dateText) {
+                // Handle date selection
+                console.log("Selected date range: " + dateText);
+                // Here you can trigger a function to update the graph based on the selected date
+            }
+        });
+
+        // Placeholder for the graph
+        const ctx = document.getElementById('statsGraph').getContext('2d');
+        const statsGraph = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [], // No labels initially
+                datasets: [{
+                    label: 'Sample Data',
+                    data: [], // No data initially
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Light background for the graph
+                    borderWidth: 1,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(200, 200, 200, 0.5)' // Light grid lines
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(200, 200, 200, 0.5)' // Light grid lines
+                        }
+                    }
+                }
+            }
+        });
+
+        // Show placeholder if no data
+        function updateGraph(data) {
+            if (data.length === 0) {
+                $("#placeholder").show();
+                $("#statsGraph").hide();
+            } else {
+                $("#placeholder").hide();
+                $("#statsGraph").show();
+                // Update the graph with new data
+                statsGraph.data.labels = data.labels;
+                statsGraph.data.datasets[0].data = data.values;
+                statsGraph.update();
+            }
+        }
+
+        // Example of how to call updateGraph
+        // updateGraph({ labels: ['Jan', 'Feb', 'Mar'], values: [10, 20, 30] });
     });
-
-    // Show the calendar popup
-    document.getElementById("calendarPopup").style.display = "block";
-  }
-
-  function closeCalendarPopup() {
-    document.getElementById("calendarPopup").style.display = "none";
-  }
 </script>
 
+<style>
+    .content {
+        padding: 20px;
+    }
+
+    .filter-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .filter-item {
+        flex: 1;
+        margin-right: 10px;
+        max-width: 500px;
+    }
+
+    .filter-item:last-child {
+        margin-right: 0;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .date-picker, .select-dropdown, .input-field {
+        width: 100%;
+        padding: 12px; /* Increased padding for better aesthetics */
+        border: 1 px solid #ccc;
+        border-radius: 8px; /* Added border radius for a smoother look */
+        font-size: 14px;
+        transition: border-color 0.3s;
+    }
+
+    .date-picker:focus, .select-dropdown:focus, .input-field:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    #graph-container {
+        position: relative;
+        height: 400px; /* Set a height for the graph container */
+    }
+
+    #placeholder {
+        display: none; /* Initially hidden */
+        text-align: center;
+        padding: 20px;
+        border: 1px dashed #ccc;
+        border-radius: 4px;
+        color: #aaa;
+    }
+
+    canvas {
+        display: block; /* Ensure the canvas is block-level */
+        width: 100% !important; /* Full width for the graph */
+        height: 100% !important; /* Full height for the graph */
+    }
+</style>
 {% endblock %}

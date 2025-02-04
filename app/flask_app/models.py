@@ -17,6 +17,7 @@ class Schedule(db.Model):
     dependency_server_key = db.Column(db.String(50), nullable=True)
     command = db.Column(db.String(500), nullable=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(50), nullable=False, default='WAITING')
 
     def __repr__(self):
         return f"<Schedule {self.task_id}>"

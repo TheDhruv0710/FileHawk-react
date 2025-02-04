@@ -6,48 +6,49 @@
     <div class="search-container">
         <div class="search-bar">
             <input type="text" id="search-bar" placeholder="Search tasks..." class="search-input" />
-            <i class="fas fa-search search-icon"></i> <!-- Magnifier icon -->
-        </div>
+            <i class="fas fa-search search-icon"></i> </div>
     </div>
 
-    <table class="table modern-table">
-        <thead>
-            <tr>
-                <th>Task ID</th>
-                <th>Schedule</th>
-                <th>Filename</th>
-                <th>Filepath</th>
-                <th>Module</th>
-                <th>Server Key</th>
-                <th>Status</th>
-                <th>Retries</th>
-                <th>Retry Delay</th>
-                <th>Timeout</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for task in tasks %}
-            <tr id="task-{{ task.id }}">
-                <td>{{ task.task_id }}</td>
-                <td>{{ task.schedule }}</td>
-                <td>{{ task.filename }}</td>
-                <td>{{ task.filepath }}</td>
-                <td>{{ task.module }}</td>
-                <td>{{ task.server_key }}</td>
-                <td>{{ task.status }}</td>
-                <td>{{ task.retries }}</td>
-                <td>{{ task.retry_delay }}</td>
-                <td>{{ task.timeout }}</td>
-                <td>
-                    <button onclick="deleteTask({{ task.id }})" class="btn btn-danger">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="card table-container">
+        <table class="table modern-table">
+            <thead>
+                <tr>
+                    <th>Task ID</th>
+                    <th>Schedule</th>
+                    <th>Filename</th>
+                    <th>Filepath</th>
+                    <th>Module</th>
+                    <th>Server Key</th>
+                    <th>Status</th>
+                    <th>Retries</th>
+                    <th>Retry Delay</th>
+                    <th>Timeout</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr id="task-{{ task.id }}">
+                    <td>{{ task.task_id }}</td>
+                    <td>{{ task.schedule }}</td>
+                    <td>{{ task.filename }}</td>
+                    <td>{{ task.filepath }}</td>
+                    <td>{{ task.module }}</td>
+                    <td>{{ task.server_key }}</td>
+                    <td>{{ task.status }}</td>
+                    <td>{{ task.retries }}</td>
+                    <td>{{ task.retry_delay }}</td>
+                    <td>{{ task.timeout }}</td>
+                    <td>
+                        <button onclick="deleteTask({{ task.id }})" class="btn btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
@@ -85,96 +86,4 @@
         });
     }
 </script>
-
-<style>
-    .search-container {
-        margin-bottom: 20px; /* Space below search bar */
-        display: flex; /* Use flexbox for alignment */
-        justify-content: center; /* Center the search bar */
-    }
-
-    .search-bar {
-        position: relative; /* Position relative for icon placement */
-        width: 100%; /* Full width for search bar */
-        max-width: 600px; /* Set a maximum width for the search bar */
-    }
-
-    .search-input {
-        width: 100%; /* Full width for search input */
-        padding: 10px 40px; /* Padding for search input */
-        border: 1px solid #ccc; /* Border for search input */
-        border-radius: 4px; /* Rounded corners */
-        font-size: 16px; /* Font size for search input */
-        transition: border-color 0.3s; /* Transition for border color */
-    }
-
-    .search-input:focus {
-        border-color: #007bff; /* Change border color on focus */
-        outline: none; /* Remove outline */
-    }
-
-    .search-icon {
-        position: absolute; /* Positioning for icon */
-        left: 10px; top: 50%; /* Center vertically */
-        transform: translateY(-50%); /* Centering */
-        color: #aaa; /* Icon color */
-    }
-
-    .table {
-        width: 100%; /* Full width for table */
-        border-collapse: collapse; /* Collapse borders */
-        margin-top: 20px; /* Margin above table */
-        font-family: "Poppins", sans-serif; /* Font family */
-        font-size: 14px; /* Font size */
-    }
-
-    .modern-table {
-        border-radius: 8px; /* Rounded corners */
-        overflow: hidden; /* Hide overflow */
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Shadow for table */
-    }
-
-    th, td {
-        border: 1px solid #ddd; /* Border for cells */
-        padding: 10px; /* Padding for cells */
-        text-align: left; /* Left align text */
-        font-weight: normal; /* Normal font weight */
-        color: #ffffff; /* Set default text color to black for better visibility */
-    }
-
-    th {
-        background-color: #4a90e2; /* Softer blue for header background */
-        color: white; /* White text for header */
-        font-weight: bold; /* Bold header text */
-    }
-
-    tr:nth-child(even) {
-        background-color: #f9f9f9; /* Light grey for even rows */
-    }
-
-    tr:hover {
-        background-color: #0056b3; /* Darker blue on hover */
-        color: white; /* White text on hover */
-        cursor: pointer; /* Pointer cursor on hover */
-    }
-
-    .btn {
-        background-color: transparent; /* Transparent background */
-        border: none; /* No border */
-        cursor: pointer; /* Pointer cursor */
-        padding: 5px; /* Padding for buttons */
-    }
-
-    .btn-danger {
-        color: #dc3545; /* Delete button color */
-    }
-
-    .btn i {
-        font-size: 16px; /* Icon size */
-    }
-
-    .btn:hover {
-        opacity: 0.8; /* Slightly transparent on hover */
-    }
-</style>
 {% endblock %}

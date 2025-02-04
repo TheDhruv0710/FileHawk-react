@@ -1,5 +1,5 @@
 {
-  "unix": {
+  "Unix": {
     "hostname": "cspf-lnx-nas-prod.uhc.com",
     "username": "csp_lxmp",
     "password": ""

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+
 {% block content %}
 <div class="dashboard">
     <div class="logo-link">
@@ -24,174 +25,164 @@
         </div>
     </div>
 
-    <div class="summary-container">
-        <div class="chart-container card" style="flex: 0 0 75%; height: 400px;"> <!-- Make the chart container larger -->
-            <canvas id="taskPieChart"></canvas>
+    <div class="charts-container">
+        <div class="chart-item">
+            <canvas id="pieChart"></canvas>
         </div>
-        <div class="execution-summary card" style="flex: 0 0 25%;"> <!-- Smaller execution summary -->
-            <h2 style="color: black;">Task Execution Summary</h2> <!-- Black heading -->
-            <div id="executionSummaryContainer" style="color: black;"> <!-- Black content -->
-                <p>No data available for task execution summary.</p> <!-- Placeholder message -->
-            </div>
+        <div class="chart-item">
+            <canvas id="barChart"></canvas>
         </div>
     </div>
 
+        <h2>Recent Activity</h2>
+    <div id="recent-activity-table">
+        <p>Loading recent activity...</p>
+    </div>
+
     <div class="profile-container">
-        <img src="https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg" alt="Profile Picture" class="profile-pic"> <!-- Updated profile picture URL -->
+        <img src="https://static.vecteezy.com/system/resources/previews/021/548/095/original/default-profile-picture-avatar-user-avatar-icon-person-icon-head-icon-profile-picture-icons-default-anonymous-user-male-and-female-businessman-photo-placeholder-social-network-avatar-portrait-free-vector.jpg" alt="Profile Picture" class="profile-pic">
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
     // Fetch and display task counts
     fetch('/current_jobs_data')
-        .then(response => response.json())
-        .then(data => {
+      .then(response => response.json())
+      .then(data => {
             document.getElementById('running-tasks-count').textContent = data.running_jobs;
             document.getElementById('failed-tasks-count').textContent = data.failed_jobs;
             document.getElementById('waiting-tasks-count').textContent = data.waiting_jobs;
             document.getElementById('retrying-tasks-count').textContent = data.retrying_jobs;
-        })
-        .catch(error => console.error('Error fetching task counts:', error));
 
-    // Fetch and display recent activity
-    fetch('/recent_activity')
-        .then(response => response.json())
-        .then(data => {
-            const timelineContainer = document.getElementById('timelineContainer');
-            timelineContainer.innerHTML = ''; // Clear previous content
-            data.forEach(activity => {
-                const item = document.createElement('div');
-                item.className = 'timeline-item';
-                item.innerHTML = `<h4>Task ID: ${activity.task_id}</h4><p>Status: ${activity.status}</p><p>Time: ${activity.timestamp}</p>`;
-                timelineContainer.appendChild(item);
-            });
-        })
-        .catch(error => console.error('Error fetching recent activity:', error));
-
-    // Fetch and display task pie chart
-    fetch('/task_summary')
-        .then(response => response.json())
-        .then(data => {
-            const ctx = document.getElementById('taskPieChart').getContext('2d');
-            const taskPieChart = new Chart(ctx, {
+            // Update the pie chart
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            const pieChart = new Chart(pieCtx, {
                 type: 'pie',
                 data: {
-                    labels: data.labels,
+                    labels: ['Running', 'Failed', 'Waiting', 'Retrying'],
                     datasets: [{
                         label: 'Task Distribution',
-                        data: data.statistics,
-                        backgroundColor: ['#36A2EB', '#FF6384', '#FFCE56'],
+                        data: [
+                            data.running_jobs,
+                            data.failed_jobs,
+                            data.waiting_jobs,
+                            data.retrying_jobs
+                        ],
+                        backgroundColor: [
+                            '#219ebc', // Running Tasks
+                            '#023047', // Failed Tasks
+                            '#ffb703', // Retrying Tasks
+                            '#fb8500'  // Waiting Tasks
+                        ],
+                        hoverOffset: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        tooltip: {
-                            callbacks: {
-                                    label: function(tooltipItem) {
-                                        return tooltipItem.label + ': ' + tooltipItem.raw; // Show label and value
-                                    }
-                                }
-                            },
-                            legend: {
-                                display: true,
-                                position: 'bottom', // Position the legend at the bottom
-                                labels: {
-                                    font: {
-                                        size: 14 // Increase font size of labels
-                                    }
-                                }
-                            }
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Task Distribution'
                         }
                     }
-                });
+                }
+            });
 
-            // Update execution summary
-            const executionSummaryContainer = document.getElementById('executionSummaryContainer');
-            if (data.statistics.length > 0) {
-                executionSummaryContainer.innerHTML = ''; // Clear placeholder
-                data.labels.forEach((label, index) => {
-                    const summaryItem = document.createElement('div');
-                    summaryItem.innerHTML = `<strong>${label}:</strong> ${data.statistics[index]}`;
-                    executionSummaryContainer.appendChild(summaryItem);
-                });
-            } else {
-                executionSummaryContainer.innerHTML = '<p>No data available for task execution summary.</p>'; // Placeholder message
+            // Update the bar chart
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            const barChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Running', 'Failed', 'Waiting', 'Retrying'],
+                    datasets: [{
+                        label: 'Task Statistics',
+                        data: [
+                            data.running_jobs,
+                            data.failed_jobs,
+                            data.waiting_jobs,
+                            data.retrying_jobs
+                        ],
+                        backgroundColor: [
+                            '#219ebc', // Running Tasks
+                            '#023047', // Failed Tasks
+                            '#ffb703', // Retrying Tasks
+                            '#fb8500'  // Waiting Tasks
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 7,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Task Statistics'
+                        }
+                    }
+                }
+            });
+
+            // Hide the placeholder if data is available
+            const placeholder = document.getElementById('placeholder');
+            if (data.running_jobs > 0 || data.failed_jobs > 0 || data.waiting_jobs > 0 || data.retrying_jobs > 0) {
+                placeholder.style.display = 'none';
             }
         })
-        .catch(error => console.error('Error fetching task pie chart data:', error));
+      .catch(error => console.error('Error fetching task counts:', error));
+
+        fetch('/recent_activity')
+      .then(response => response.json())
+      .then(data => {
+            const tableContainer = document.getElementById('recent-activity-table');
+            const table = document.createElement('table');
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Task ID</th>
+                        <th>Status</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.map(activity => `
+                        <tr>
+                            <td>${activity.task_id}</td>
+                            <td>${activity.status}</td>
+                            <td>${activity.timestamp}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            `;
+            tableContainer.innerHTML = ''; // Clear the container
+            tableContainer.appendChild(table);
+        })
+      .catch(error => console.error('Error fetching recent activity:', error));
 </script>
-
-<style>
-    .summary-container {
-        display: flex; /* Flexbox for summary container */
-        justify-content: space-between; /* Space between chart and summary */
-        margin-top: 20px; /* Margin above summary */
-    }
-
-    .chart-container {
-        position: relative; /* Positioning for chart container */
-        height: 400px; /* Height of the chart */
-    }
-
-    .execution-summary {
-        max-width: 350px;
-        background-color: #ffffff; /* White background for summary card */
-        border-radius: 12px; /* Rounded corners */
-        padding: 20px; /* Padding for summary card */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for summary card */
-        color: #000; /* Text color for summary */
-        flex: 1; /* Allow summary to grow */
-        margin-left: 20px; /* Space between chart and summary */
-    }
-
-    .profile-container {
-        position: absolute; /* Positioning for profile picture */
-        top: 20px; /* Distance from top */
-        right: 20px; /* Distance from right */
-    }
-
-    .profile-pic {
-        width: 50px; /* Width of profile picture */
-        height: 50px; /* Height of profile picture */
-        border-radius: 50%; /* Circular profile picture */
-        border: 2px solid #fff; /* White border around profile picture */
-        cursor: pointer; /* Pointer cursor on hover */
-        transition: transform 0.3s ease; /* Transition for hover effect */
-    }
-
-    .profile-pic:hover {
-        transform: scale(1.1); /* Slightly enlarge on hover */
-    }
-
-    .card {
-        border-radius: 12px; /* Rounded corners */
-        padding: 20px; /* Padding for card */
-        color: #fff; /* Text color for card */
-        transition: box-shadow 0.3s ease, transform 0.3s ease; /* Transition for shadow and scale */
-    }
-
-    .running-tasks {
-        background-color: #4CAF50; /* Green for running tasks */
-    }
-
-    .failed-tasks {
-        background-color: #F44336; /* Red for failed tasks */
-    }
-
-    .waiting-tasks {
-        background-color: #FF9800; /* Orange for waiting tasks */
-    }
-
-    .retrying-tasks {
-        background-color: #2196F3; /* Blue for retrying tasks */
-    }
-
-    /* Hover effects for cards */
-    .card:hover {
-        transform: scale(1.05); /* Slightly enlarge on hover */
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Darker shadow on hover */
-    }
-</style>
 {% endblock %}

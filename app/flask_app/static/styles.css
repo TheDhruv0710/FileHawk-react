@@ -1,121 +1,129 @@
 /* General Styles */
 body {
-    background-color: #002240; /* Dark background */
-    color: #fff; /* White text */
-    font-family: "Poppins", sans-serif; /* Font family */
+    background-color: #f8f8f8; /* Background */
+    color: #333333; /* Dark Gray Text */
+    font-family: "Helvetica", sans-serif; /* Font family */
     margin: 0;
     font-size: 16px;
+}.dashboard-container {
+    display: flex; /* Flexbox for layout */
+    height: 100vh; /* Full height */
 }
 
-.dashboard-container {
+.charts-container {
     display: flex;
-    height: 100vh;
+    justify-content: space-around; /* Distribute charts evenly */
+    height: 400px; /* Set a height for the charts container */
+}.chart-item {
+    width: 45%; /* Each chart takes roughly half the width */
+    position: relative; /* To position the placeholder properly */
 }
 
-/* Sidebar Styles */
-.sidebar {
-    background: linear-gradient(135deg, #003366 0%, #005f8d 100%); /* Gradient background */
-    color: #fff; /* Sidebar text color */
+/* Sidebar Styles */.sidebar {
+    background-color: #0096c7; /* Sidemenu */
+    color: #fff; /* White text */
     width: 250px; /* Sidebar width */
     padding: 20px; /* Sidebar padding */
     font-size: 18px; /* Sidebar font size */
     border-radius: 12px; /* Rounded corners */
     transition: background 0.3s ease; /* Transition for background */
-}
+}.sidebar:hover {
+    background-color: #0077b6; /* Darker shade on hover */
 
-.sidebar:hover {
-    background: linear-gradient(135deg, #005f8d 0%, #0077a3 100%); /* Darker gradient on hover */
-}
-
-.logo-link {
+}.logo-link {
     display: flex; /* Flexbox for logo */
     align-items: center; /* Center items vertically */
     margin-bottom: 20px; /* Margin below logo */
-}
-
-.logo-text {
+}.logo img {
+    display: flex;  /* Makes the image a block-level element */
+    max-width: 230px;
+    height: auto;
+    justify-content: center;
+    margin-bottom: 20px;
+}.logo-text {
     font-size: 1.8em; /* Increased font size for logo */
     font-weight: bold; /* Bold font for logo */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Shadow for depth */
     transition: transform 0.3s ease; /* Transition for hover effect */
-}
-
-.logo-link:hover .logo-text {
+}.logo-link:hover.logo-text {
     transform: scale(1.1); /* Slightly enlarge on hover */
-}
-
-.user-info {
+}.user-info {
     text-align: center; /* Centered user info */
     margin-bottom: 20px; /* Margin below user info */
-}
-
-.user-info h3 {
+}.user-info h3 {
     font-size: 1.3em; /* User info font size */
     margin-bottom: 10px; /* Margin below user info */
-}
-
-.sidebar nav ul {
-    list-style: none; /* Remove list style */
-    padding: 0; /* Remove padding */
-}
-
-.sidebar a {
+}.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+}.group-header {
+    margin-bottom: 10px;
+    font-size: 18px;
+}.group-header span {
+    /* Styles for the header */
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    font-weight: bold;
+}.group-items {
+    padding-left: 20px;
+}.group-items li {
+    list-style: disc;
+}.group-items a {
+    /* Reset default link styles */
+    color: inherit;
+    background-color: transparent;
+    padding: 0;
+    border-radius: 0;
+}.group-items a:hover {
+    background-color: rgba(255, 102, 0, 0.5);
+    border-radius: 12px;
+    padding: 10px;
+    padding-left: 15px;
+}.sidebar a {
     color: #fff; /* Link color */
     text-decoration: none; /* Remove underline */
     display: block; /* Block display */
     padding: 10px; /* Padding for links */
     transition: background-color 0.3s ease, padding-left 0.3s ease; /* Transition for hover effect */
-}
-
-.sidebar a:hover {
-    background-color: rgba(255, 102, 0, 0.5); /* Hover background color */
+}.sidebar a:hover {
+    background-color: #1a5276; /* Hover background color */
     border-radius: 12px; /* Rounded corners on hover */
     padding-left: 15px; /* Indent on hover */
 }
 
-/* Main Content Styles */
-.main-content {
+/* Main Content Styles */.main-content {
     flex-grow: 1; /* Allow main content to grow */
-    background-color: #003366; /* Main content background */
+    background-color: #f8f8f8; /* Main content background */
     padding: 20px; /* Padding for main content */
-}
-
-.top-bar {
+}.top-bar {
     display: flex; /* Flexbox for top bar */
     justify-content: space-between; /* Space between items */
     align-items: center; /* Center items vertically */
     margin-bottom: 20px; /* Margin below top bar */
     border-radius: 12px; /* Rounded corners */
-}
-
-.page-title {
+}.page-title {
     color: #fff; /* Page title color */
     font-size: 1.4em; /* Page title font size */
-}
-
-.add-button {
-    background-color: #f7941e; /* Add button background */
-    color: #fff; /* Add button text color */
+}.add-button {
+    background-color: #fb8500; /* Retry Button Background */
+    color: #fff; /* White text */
     border: none; /* No border */
     padding: 8px 12px; /* Padding for button */
     border-radius: 8px; /* Rounded corners */
     cursor: pointer; /* Pointer cursor */
-}
-
-.add-button:hover {
-    background-color: #e68a17; /* Darker background on hover */
+}.add-button:hover {
+    background-color: #e07b00; /* Darker Orange on hover */
     border-radius: 12px; /* Rounded corners on hover */
 }
 
-/* Card Styles */
-.card-container {
+/* Card Styles */.card-container {
     display: grid; /* Grid layout for cards */
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive columns */
     gap: 20px; /* Gap between cards */
-}
-
-.card {
-    background-color: #ffffff; /* Card background */
+}.card {
+    background-color: #ffffff; /* White Card Background */
     border-radius: 12px; /* Rounded corners */
     padding: 20px; /* Padding for card */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for card */
@@ -123,19 +131,18 @@ body {
     color: #000; /* Text color for card */
 }
 
-.card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Darker shadow on hover */
-}
-
-/* Chart Container Styles */
-.chart-container {
-    background-color: #fff; /* Chart background */
-    border-radius: 12px; /* Rounded corners */
-    padding: 20px; /* Padding for chart */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for chart */
-    margin-top: 20px; /* Margin above chart */
-    width: 300px; /* Set a fixed width for the pie chart */
-    height: 300px; /* Set a fixed height for the pie chart */
+/* Task Stats Colors */.running-tasks {
+    background-color: #219ebc; /* Running Tasks */
+    color: #ffffff; /* White text */
+}.failed-tasks {
+    background-color: #023047; /* Failed Tasks */
+    color: #ffffff; /* White text */
+}.waiting-tasks {
+    background-color: #fb8500; /* Waiting Tasks */
+    color: #ffffff; /* Black text */
+}.retrying-tasks {
+    background-color: #ffb703; /* Retrying Tasks */
+    color: #ffffff; /* White text */
 }
 
 /* Table Styles */
@@ -155,8 +162,8 @@ th, td {
 }
 
 th {
-    background-color: #f5f5f5; /* Header background */
-    font-weight: bold; /* Bold header text */
+    background-color: #8ecae6; /* Header Background */
+    color: white; /* White text for header */
 }
 
 tr:nth-child(even) {
@@ -167,63 +174,105 @@ tr:hover {
     background-color: #e0e0e0; /* Darker grey on hover */
     cursor: pointer; /* Pointer cursor on hover */
 }
+.card.task-form {
+    background-color: #E3F2FD; /* White background */
+    border-radius: 12px; /* Rounded corners */
+    padding: 20px; /* Padding for card */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for card */
+    transition: box-shadow 0.3s ease; /* Transition for shadow */
+    color: #000; /* Text color for card */
+    min-height: 900px;
+}
 
-/* Form Styles */
 .form-container {
-    display: flex; /* Flexbox for form */
-    justify-content: space-between; /* Space between columns */
-    gap: 20px; /* Gap between columns */
-    margin-bottom: 20px; /* Margin below form */
+    display: block;
+}.form-field {
+    margin-bottom: 15px;
+}.form-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}.form-field input,.form-field select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}.form-field input:hover,.form-field select:hover {
+    border-color: #007bff; /* Highlight border on hover */
+}.btn-primary {
+    background-color: #007bff; /* Blue button */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}.btn-primary:hover {
+    background-color: #0069d9; /* Darker blue on hover */
 }
-
-.form-field {
-    margin-bottom: 15px; /* Margin below form field */
-}
-
-.form-field label {
-    display: block; /* Block display for label */
-    margin-bottom: 5px; /* Margin below label */
-    font-weight: bold; /* Bold label text */
-}
-
-.form-field input,
-.form-field select {
-    width: 100%; /* Full width */
-    padding: 8px; /* Padding for input */
-    border: 1px solid #ccc; /* Border for input */
-    border-radius: 4px; /* Rounded corners */
-    box-sizing: border-box; /* Box sizing */
-}
-
-/* Button Styles */
-button {
-    background-color: #dc3545; /* Red background color */
-    color: white; /* White text */
-    border: none; /* No border */
-    padding: 6px 12px; /* Padding for button */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Pointer cursor */
-    transition: background-color 0.3s ease; /* Transition for background color */
-}
-
-button:hover {
+.table-container {
+    background-color: #ffffff; /* White background */
+    border-radius: 12px; /* Rounded corners */
+    padding: 20px; /* Padding for card */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Shadow for card */
+    transition: box-shadow 0.3s ease; /* Transition for shadow */
+    color: #000; /* Text color for card */
+}.modern-table {
+    width: 100%;
+    border-collapse: collapse;
+}.modern-table th,.modern-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}.modern-table th {
+    background-color: #0077b6; /* Light gray background for header */
+    font-weight: bold;
+}.modern-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternate row color */
+}.modern-table tbody tr:hover {
+    background-color: #e0e0e0; /* Highlight row on hover */
+}.search-container {
+    margin-bottom: 20px;
+}.search-bar {
+    position: relative;
+    display: inline-block;
+}.search-input {
+    width: 300px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}.search-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    color: #8ECAE6;
+}.btn-danger{
+        background-color: #dc3545; /* Red background color */
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}.btn-danger:hover {
     background-color: #c82333; /* Darker red on hover */
 }
 
-/* Loading Styles */
-.loading {
+/* Loading Styles */.loading {
     opacity: 0.5; /* Semi-transparent */
 }
 
 /* Media Queries */
 @media (max-width: 768px) {
-    .card-container {
+  .card-container {
         grid-template-columns: 1fr; /* Single column on small screens */
     }
 }
 
-/* Popup Styles */
-.popup {
+/* Popup Styles */.popup {
     display: none; /* Hidden by default */
     position: fixed; /* Fixed position */
     top: 50%; /* Center vertically */
@@ -234,9 +283,7 @@ button:hover {
     padding: 20px; /* Padding for popup */
     background-color: white; /* Popup background */
     z-index: 100; /* Above other elements */
-}
-
-.close-button {
+}.close-button {
     position: absolute; /* Absolute position */
     top: 10px; /* Position from top */
     right: 15px; /* Position from right */
@@ -244,16 +291,29 @@ button:hover {
     cursor: pointer; /* Pointer cursor */
 }
 
-/* Calendar Button Styles */
-.calendar-button {
+/* Calendar Button Styles */.calendar-button {
     font-size: 0.8em; /* Adjust the button font size as needed */
-}
-
-.calendar-icon {
+}.calendar-icon {
     position: absolute; /* Absolute position */
     top: 62%; /* Position from top */
     right: 8px; /* Position from right */
     transform: translateY(-50%); /* Center vertically */
     font-size: 1.2em; /* Font size */
     cursor: pointer; /* Pointer cursor */
+}
+
+
+/* Profile Picture Styles */.profile-container {
+    position: absolute; /* Positioning for profile picture */
+    top: 20px; /* Distance from top */
+    right: 20px; /* Distance from right */
+}.profile-pic {
+    width: 50px; /* Width of profile picture */
+    height: 50px; /* Height of profile picture */
+    border-radius: 50%; /* Circular profile picture */
+    border: 2px solid #fff; /* White border around profile picture */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: transform 0.3s ease; /* Transition for hover effect */
+}.profile-pic:hover {
+    transform: scale(1.1); /* Slightly enlarge on hover */
 }

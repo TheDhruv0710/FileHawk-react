@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 import requests
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from flask_app.models import Schedule
+from flask_app.models import Schedule, db
 import paramiko
 
 # Load server configuration
@@ -119,18 +119,35 @@ def process_schedule(schedule):
     start_time = datetime.now()
     retry_count = 0
 
-    while retry_count < retries and (datetime.now() - start_time).total_seconds() < timeout:
-        if check_file(server_key, filepath, filename):
-            execute_command(dependency_server_key, command)
-            return True
+    schedule.status = 'RUNNING'  # Set initial status to RUNNING
+    db.session.commit()
+
+    try:
+        while retry_count < retries and (datetime.now() - start_time).total_seconds() < timeout:
+            if check_file(server_key, filepath, filename):
+                execute_command(dependency_server_key, command)
+                schedule.status = 'SUCCESS'
+                db.session.commit()
+                return True  # Task successful
+            else:
+                print("File not found..")
+                schedule.status = 'RETRYING'
+                db.session.commit()
+
+            time.sleep(retry_delay)
+            retry_count += 1
         else:
-            print("File not found..")
-
-        time.sleep(retry_delay)
-        retry_count += 1
-
-    print(f"Task {schedule.task_id} timed out.")
-    return False
+            # This block executes when the while loop completes (either all retries are exhausted or timeout is reached)
+            if schedule.status!= 'SUCCESS':
+                schedule.status = 'FAILED'
+                db.session.commit()
+                print(f"Task {schedule.task_id} failed after all retries.")
+                return False  # Task failed
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        schedule.status = 'FAILED'
+        db.session.commit()
+        return False
 
 def scheduler_loop():
     while True:

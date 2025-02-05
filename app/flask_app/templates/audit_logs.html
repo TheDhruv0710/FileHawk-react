@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Audit Logs{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h1>Audit Logs</h1>
+
+    <div class="card table-container">
+        <table class="table modern-table">
+            <thead>
+                <tr>
+                    <th>Page</th>
+                    <th>Date and Time</th>
+                    <th>Action</th>
+                    <th>User</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.page }}</td>
+                    <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ log.action }}</td>
+                    <td>{{ log.user }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

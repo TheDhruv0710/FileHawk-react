@@ -2,6 +2,7 @@ import datetime
 from flask import Blueprint, request, jsonify, session, render_template, redirect, url_for
 from flask_app.models import db, Schedule
 import json
+from flask_app.models import AuditLog
 
 def load_server_config():
     with open('server_config.json', 'r') as file:
@@ -34,6 +35,39 @@ def stats():
     server_keys = list(config.keys())
     return render_template('stats.html', server_keys=server_keys)
 
+@app_blueprint.route('/audit_logs')
+def audit_logs():
+    logs = AuditLog.query.order_by(AuditLog.timestamp.desc()).all()
+    return render_template('audit_logs.html', logs=logs)
+
+@app_blueprint.route('/update_config', methods=['GET', 'POST'])
+def update_config():
+    with open('server_config.json', 'r') as f:
+        server_config = json.load(f)
+
+    if request.method == 'POST':
+        # Get the form data
+        server_name = request.form['server-name']
+        hostname = request.form['hostname']
+        username = request.form['username']
+        password = request.form['password']
+
+        # Update the server_config.json file
+        with open('server_config.json', 'r+') as f:
+            config = json.load(f)
+            config[server_name] = {
+                'hostname': hostname,
+                'username': username,
+                'password': password
+            }
+            f.seek(0)  # Reset file pointer to the beginning
+            json.dump(config, f, indent=4)  # Write the updated config
+            f.truncate()  # Truncate the file in case the new config is shorter
+
+        return "Configuration updated successfully!"  # Or redirect to another page
+
+    return render_template('update_config.html', server_config = server_config)
+
 @app_blueprint.route('/add_task', methods=['POST'])
 def add_task():
     task = Schedule(
@@ -52,6 +86,19 @@ def add_task():
     db.session.add(task)
     db.session.commit()
     return redirect(url_for('app_blueprint.create_task'))
+
+@app_blueprint.route('/delete_config/<server_name>', methods=['DELETE'])
+def delete_config(server_name):
+    with open('server_config.json', 'r+') as f:
+        config = json.load(f)
+        if server_name in config:
+            del config[server_name]
+            f.seek(0)
+            json.dump(config, f, indent=4)
+            f.truncate()
+            return jsonify({'message': 'Configuration deleted successfully'}), 200
+        else:
+            return jsonify({'message': 'Configuration not found'}), 404
 
 @app_blueprint.route('/current_jobs_data')
 def current_jobs_data():

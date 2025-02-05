@@ -16,6 +16,9 @@
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="File Hawk Logo">
                 </div>
             </a>
+            <div class="user-info">
+                <h3>{{ username }}</h3>
+            </div>
             <nav>
                 <ul>
                     <li class="group-header">
@@ -33,6 +36,8 @@
                             <li><a href="#">View Automations</a></li>
                         </ul>
                     </li>
+                    <li class="group-header"><b><a href="{{ url_for('app_blueprint.update_config') }}">Update Configuration</a></b></li>
+                    <li class="group-header"><b><a href="{{ url_for('app_blueprint.audit_logs') }}">Audit Logs</a></b></li>
                 </ul>
             </nav>
         </aside>
@@ -47,5 +52,13 @@
         </main>
     </div>
 
+    <script>
+        const groupHeaders = document.querySelectorAll('.group-header');
+        groupHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                header.classList.toggle('expanded');
+            });
+        });
+    </script>
 </body>
 </html>

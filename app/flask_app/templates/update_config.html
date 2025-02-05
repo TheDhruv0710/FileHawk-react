@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content">
+    <h1>Update Server Configuration</h1>
+
+    <button id="add-config-button" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add Configuration
+    </button>
+
+    <div class="card table-container">
+        <table class="table modern-table">
+            <thead>
+                <tr>
+                    <th>Server Name</th>
+                    <th>Hostname</th>
+                    <th>Username</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for server_name in server_config %}
+                <tr>
+                    <td>{{ server_name }}</td>
+                    <td>{{ server_config[server_name]['hostname'] }}</td>
+                    <td>{{ server_config[server_name]['username'] }}</td>
+                    <td>
+                        <button class="btn btn-secondary edit-config-button" data-server-name="{{ server_name }}" data-hostname="{{ server_config[server_name]['hostname'] }}" data-username="{{ server_config[server_name]['username'] }}" data-password="{{ server_config[server_name]['password'] }}">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger delete-config-button" data-server-name="{{ server_name }}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card config-form-card" style="display: none;">
+        <form id="config-form">
+            <div class="form-group">
+                <label for="server-name">Server Name:</label>
+                <input type="text" id="server-name" name="server-name" required>
+            </div>
+            <div class="form-group">
+                <label for="hostname">Hostname:</label>
+                <input type="text" id="hostname" name="hostname" required>
+            </div>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Configuration</button>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    const form = document.getElementById('config-form');
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+
+        fetch('/update_config', {
+            method: 'POST',
+            body: formData
+        })
+      .then(response => response.text())
+      .then(data => {
+            alert(data);
+        })
+      .catch(error => {
+            console.error('Error updating configuration:', error);
+        });
+    });
+
+    const addConfigButton = document.getElementById('add-config-button');
+    addConfigButton.addEventListener('click', () => {
+        // Show the form and clear the input fields
+        document.querySelector('.config-form-card').style.display = 'block';
+        document.getElementById('server-name').value = '';
+        document.getElementById('hostname').value = '';
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+    });
+
+    // Add event listeners for the "Edit" buttons
+    const editConfigButtons = document.querySelectorAll('.edit-config-button');
+    editConfigButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Show the form and populate the input fields with the server data
+            document.querySelector('.config-form-card').style.display = 'block';
+            document.getElementById('server-name').value = button.dataset.serverName;
+            document.getElementById('hostname').value = button.dataset.hostname;
+            document.getElementById('username').value = button.dataset.username;
+            document.getElementById('password').value = button.dataset.password;
+        });
+    });
+
+        const deleteConfigButtons = document.querySelectorAll('.delete-config-button');
+    deleteConfigButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const serverName = button.dataset.serverName;
+            if (confirm(`Are you sure you want to delete the configuration for ${serverName}?`)) {
+                // Send a request to the backend to delete the configuration
+                fetch(`/delete_config/${serverName}`, { method: 'DELETE' })
+                  .then(response => {
+                        if (response.ok) {
+                            // Remove the row from the table
+                            button.closest('tr').remove();
+                        } else {
+                            console.error('Failed to delete configuration');
+                        }
+                    })
+                  .catch(error => console.error('Error deleting configuration:', error));
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -20,7 +20,7 @@ body {
 }
 
 /* Sidebar Styles */.sidebar {
-    background-color: #0096c7; /* Sidemenu */
+    background-color: #023047; /* Sidemenu */
     color: #fff; /* White text */
     width: 250px; /* Sidebar width */
     padding: 20px; /* Sidebar padding */
@@ -58,7 +58,6 @@ body {
     padding: 0;
 }.group-header {
     margin-bottom: 10px;
-    font-size: 18px;
 }.group-header span {
     /* Styles for the header */
     color: #fff;
@@ -66,6 +65,7 @@ body {
     display: block;
     padding: 10px;
     font-weight: bold;
+    font-size: 1.1em;
 }.group-items {
     padding-left: 20px;
 }.group-items li {
@@ -74,13 +74,18 @@ body {
     /* Reset default link styles */
     color: inherit;
     background-color: transparent;
-    padding: 0;
+    padding: 5px 0;
     border-radius: 0;
+    font-size: 0.9em;
+    transition: color 0.3s ease;
 }.group-items a:hover {
-    background-color: rgba(255, 102, 0, 0.5);
-    border-radius: 12px;
-    padding: 10px;
-    padding-left: 15px;
+    color: #ffb703;
+}.sidebar a {
+    color: #fff; /* Link color */
+    text-decoration: none; /* Remove underline */
+    display: block; /* Block display */
+    padding: 10px; /* Padding for links */
+    transition: background-color 0.3s ease, padding-left 0.3s ease;
 }.sidebar a {
     color: #fff; /* Link color */
     text-decoration: none; /* Remove underline */
@@ -138,10 +143,10 @@ body {
     background-color: #023047; /* Failed Tasks */
     color: #ffffff; /* White text */
 }.waiting-tasks {
-    background-color: #fb8500; /* Waiting Tasks */
+    background-color: #ffb703; /* Waiting Tasks */
     color: #ffffff; /* Black text */
 }.retrying-tasks {
-    background-color: #ffb703; /* Retrying Tasks */
+    background-color: #fb8500; /* Retrying Tasks */
     color: #ffffff; /* White text */
 }
 
@@ -302,6 +307,26 @@ tr:hover {
     cursor: pointer; /* Pointer cursor */
 }
 
+.config-form-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+    color: #000;
+}.config-form-card.form-group {
+    margin-bottom: 15px;
+}.config-form-card label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}.config-form-card input[type="text"],.config-form-card input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
 
 /* Profile Picture Styles */.profile-container {
     position: absolute; /* Positioning for profile picture */

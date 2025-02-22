@@ -1,17 +1,7 @@
 {
-    "Unix": {
-        "hostname": "cspf-lnx-nas-prod.uhc.com",
-        "username": "csp_lxmp",
-        "password": ""
-    },
-    "Windows": {
-        "hostname": "wp000031853",
-        "username": "csp_fac_bat_prd",
-        "password": ""
-    },
-    "Airflow": {
-        "hostname": "",
-        "username": "",
-        "password": ""
-    }
+  "test": {
+    "hostname": "test",
+    "username": "test",
+    "password": "test"
+  }
 }

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save Credentials</title>
+</head>
+<body>
+    <h1>Enter Credentials</h1>
+    <form action="/save_server" method="post">
+        <label for="servername">ServerName:</label>
+        <input type="text" id="servername" name="servername" required><br><br>
+        <label for="host">Host:</label>
+        <input type="text" id="host" name="host" required><br><br>
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <input type="submit" value="Save">
+    </form>
+</body>
+</html>

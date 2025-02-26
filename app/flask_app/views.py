@@ -6,13 +6,16 @@ from flask_app.models import AuditLog
 
 
 def load_server_config():
-    with open('/app/server_config.json', 'r') as file:
+    with open('server_config.json', 'r') as file:
         config = json.load(file)
     return config
 
 
-app_blueprint = Blueprint('app_blueprint', __name__, template_folder="/app/flask_app/templates")
+app_blueprint = Blueprint('app_blueprint', __name__, template_folder="templates")
 
+@app_blueprint.route('/login')
+def login():
+    return render_template('login.html')
 
 @app_blueprint.route('/create_server')
 def create_server():
@@ -26,7 +29,7 @@ def save_server():
     username = request.form['username']
     password = request.form['password']
 
-    with open('/app/server_config.json', 'r') as f:
+    with open('server_config.json', 'r') as f:
 
         cred = json.load(f)
     cred[servername] = {
@@ -35,7 +38,7 @@ def save_server():
         "password": password
     }
 
-    with open('/app/server_config.json', 'w') as f:
+    with open('server_config.json', 'w') as f:
         json.dump(cred,f)
 
 
@@ -44,6 +47,11 @@ def save_server():
 
 @app_blueprint.route('/')
 def index():
+    username = session.get('username', 'Guest')
+    return render_template('login.html', username=username)
+
+@app_blueprint.route('/dashboard')
+def dashboard():
     username = session.get('username', 'Guest')
     return render_template('landing_page.html', username=username)
 
@@ -76,7 +84,7 @@ def audit_logs():
 
 @app_blueprint.route('/update_config', methods=['GET', 'POST'])
 def update_config():
-    with open('/app/server_config.json', 'r') as f:
+    with open('server_config.json', 'r') as f:
         server_config = json.load(f)
 
     if request.method == 'POST':
@@ -87,7 +95,7 @@ def update_config():
         password = request.form['password']
 
         # Update the server_config.json file
-        with open('/app/server_config.json', 'r+') as f:
+        with open('server_config.json', 'r+') as f:
             config = json.load(f)
             config[server_name] = {
                 'hostname': hostname,

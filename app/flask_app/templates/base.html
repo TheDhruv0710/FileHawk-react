@@ -11,29 +11,29 @@
 <body>
     <div class="dashboard-container">
         <aside class="sidebar">
-            <a href="{{ url_for('app_blueprint.index') }}" class="logo-link">
+            <a href="{{ url_for('app_blueprint.dashboard') }}" class="logo-link">
                 <div class="logo">
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="File Hawk Logo">
                 </div>
             </a>
             <div class="user-info">
-                <h3>{{ username }}</h3>
+<!--                <h3>{{ username }}</h3>-->
             </div>
             <nav>
                 <ul>
                     <li class="group-header">
                         <span>Airflow File Manager</span>
                         <ul class="group-items">
-                            <li><a href="{{ url_for('app_blueprint.create_task') }}">Create Task</a></li>
-                            <li><a href="{{ url_for('app_blueprint.view_tasks') }}">View Tasks</a></li>
-                            <li><a href="{{ url_for('app_blueprint.stats') }}">Stats</a></li>
+                            <a href="{{ url_for('app_blueprint.create_task') }}">Create Task</a>
+                            <a href="{{ url_for('app_blueprint.view_tasks') }}">View Tasks</a>
+                            <a href="{{ url_for('app_blueprint.stats') }}">Stats</a>
                         </ul>
                     </li>
                     <li class="group-header">
                         <span>File Archival</span>
                         <ul class="group-items">
-                            <li><a href="#">Create an Automation</a></li>
-                            <li><a href="#">View Automations</a></li>
+                            <a href="#">Create an Automation</a>
+                            <a href="#">View Automations</a>
                         </ul>
                     </li>
                     <li class="group-header"><b><a href="{{ url_for('app_blueprint.update_config') }}">Update Configuration</a></b></li>

@@ -1,0 +1,57 @@
+{
+    "EmailDetails":
+    {
+        "EmailFrom": "asp_test@uhc.com",
+        "EmailDefaultTo": "Alanza_Blake@optum.com"
+    },
+    "ArchivalProcessName":
+    {
+        "CHRYSALIS":
+        {
+            "Process":
+            {
+                "CDB":
+                [
+                    {
+                        "FilePath": "//Volumes/chrysalisnas/Member/CDB/error_logs",
+                        "ArchiveFilePath": "//Volumes/chrysalisnas/Member/CDB/error_logs/archive",
+                        "FileExtension": ".log",
+                        "FilePurgeDays": 20,
+                        "Action": "Archive"
+                    },
+                    {
+                        "FilePath": "//Volumes/chrysalisnas/Member/CDB/output",
+                        "ArchiveFilePath": "//Volumes/chrysalisnas/Member/CDB/output/archive",
+                        "FileExtension": ".txt,.TXT",
+                        "FilePurgeDays": 20,
+                        "Action": "Archive"
+                    },
+                    {
+                        "FilePath": "//Volumes/chrysalisnas/Member/CDB/output/done",
+                        "ArchiveFilePath": "//Volumes/chrysalisnas/Member/CDB/output/done/archive",
+                        "FileExtension": ".txt,.TXT",
+                        "FilePurgeDays": 20,
+                        "Action": "Archive"
+                    },
+                    {
+                        "ArchiveFilePath": "//Volumes/chrysalisnas/Member/CDB/output/archive",
+                        "FilePurgeDays": 1,
+                        "Action": "Delete"
+                    },
+                    {
+                        "ArchiveFilePath": "//Volumes/chrysalisnas/Member/CDB/output/done/archive",
+                        "FilePurgeDays": 1,
+                        "Action": "Delete"
+                    }
+                ]
+            },
+            "Email":
+            {
+                "EmailTo": "Alanza_Blake@optum.com",
+                "EmailSubject": "Chrysalis File Archival",
+                "EmailSuccessBody": "Team - Chrysalis File archival completed.",
+                "EmailFailureBody": "Team - Chrysalis File archival failed, please refer the log for more details."
+            }
+        }
+    }
+}

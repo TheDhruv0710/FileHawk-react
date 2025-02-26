@@ -1,8 +1,0 @@
-apiVersion: v1
-metadata:
-  askId: AIDE_0074245
-  caAgileId: poc
-  projectKey: com.optum.chrysalis:framework-chrysalis-nas-archival
-  projectFriendlyName: framework-chrysalis-nas-archival
-  componentType: code
-  targetQG: ADOPTION

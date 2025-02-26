@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content">
+    <h1>Point of Contacts for State</h1>
+
+    <div class="card table-container">
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="excel_file" accept=".xls, .xlsx" required>
+            <button type="submit">Import Excel</button>
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        {% if poc_data %}
+            {{ poc_data | safe }}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

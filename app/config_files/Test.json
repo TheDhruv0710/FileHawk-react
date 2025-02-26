@@ -1,0 +1,32 @@
+{
+    "EmailDetails": {
+        "EmailFrom": "abc@gmail.com",
+        "EmailDefaultTo": "ask@gmail.com"
+    },
+    "ArchivalProcessName": {
+        "Test": {
+            "Process": {
+                "Test": [
+                    {
+                        "FilePath": "E:/SSMO/Dhruv",
+                        "ArchiveFilePath": "E:/SSMO/Dhruv",
+                        "FileExtension": ".txt",
+                        "FilePurgeDays": 60,
+                        "Action": "Archive"
+                    },
+                    {
+                        "ArchiveFilePath": "E:/SSMO/Dhruv",
+                        "FilePurgeDays": 90,
+                        "Action": "Delete"
+                    }
+                ]
+            },
+            "Email": {
+                "EmailTo": "ask@gmail.com",
+                "EmailSubject": "Test File Archival",
+                "EmailSuccessBody": "Team - Test File archival completed.",
+                "EmailFailureBody": "Team - Test File archival failed, please refer the log for more details."
+            }
+        }
+    }
+}

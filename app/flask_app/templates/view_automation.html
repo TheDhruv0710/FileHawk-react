@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="content">
+    <h1>View Automations</h1>
+
+    <div class="card table-container">
+        {% for automation in automations %}
+            <h2>{{ automation.name }}</h2>
+            <pre>{{ automation.config | tojson }}</pre>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

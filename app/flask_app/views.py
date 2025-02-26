@@ -1,5 +1,6 @@
 import datetime
-from flask import Blueprint, request, jsonify, session, render_template, redirect, url_for
+from flask import Blueprint, request, render_template, session, flash, jsonify
+import pandas as pd
 from flask_app.models import db, Schedule
 import json, os
 from flask_app.models import AuditLog
@@ -80,6 +81,98 @@ def stats():
 def audit_logs():
     logs = AuditLog.query.order_by(AuditLog.timestamp.desc()).all()
     return render_template('audit_logs.html', logs=logs)
+
+@app_blueprint.route('/create_automation', methods=['GET', 'POST'])
+def create_automation():
+    os.makedirs("config_files", exist_ok=True)
+    if request.method == 'POST':
+        try:
+            # 1. Extract data from the form
+            automation_name = request.form['automation_name']
+            archival_process_name = request.form['archival_process_name']
+            email_from = request.form['email_from']
+            email_to = request.form['email_to']
+            process_name = request.form['process_name']
+            file_path = request.form['file_path']
+            archive_file_path = request.form['archive_file_path']
+            file_extension = request.form['file_extension']
+            file_purge_days = int(request.form['file_purge_days'])
+            archive_delete_days = int(request.form['archive_delete_days'])
+
+            # 2. Construct the config.json structure
+            config_data = {
+                "EmailDetails": {
+                    "EmailFrom": email_from,
+                    "EmailDefaultTo": email_to
+                },
+                "ArchivalProcessName": {
+                    archival_process_name: {
+                        "Process": {
+                            process_name: [
+                                {
+                                    "FilePath": file_path,
+                                    "ArchiveFilePath": archive_file_path,
+                                    "FileExtension": file_extension,
+                                    "FilePurgeDays": file_purge_days,
+                                    "Action": "Archive"
+                                },
+                                {
+                                    "ArchiveFilePath": archive_file_path,
+                                    "FilePurgeDays": archive_delete_days,
+                                    "Action": "Delete"
+                                }
+                            ]
+                        },
+                        "Email": {
+                            "EmailTo": email_to,
+                            "EmailSubject": f"{archival_process_name} File Archival",
+                            "EmailSuccessBody": f"Team - {archival_process_name} File archival completed.",
+                            "EmailFailureBody": f"Team - {archival_process_name} File archival failed, please refer the log for more details."
+                        }
+                    }
+                }
+            }
+
+            # 3. Save the config.json file
+            config_filepath = os.path.join("config_files", f"{automation_name}.json")
+            os.makedirs("config_files", exist_ok=True)
+            with open(config_filepath, 'w') as f:
+                json.dump(config_data, f, indent=4)
+
+            # 4. Run the archival process
+            main.main(config_filepath)
+
+            flash(f'Automation "{automation_name}" created and executed successfully!')
+            return redirect(url_for('app_blueprint.view_automation'))
+        except Exception as e:
+            flash(f'Error creating or executing automation: {str(e)}')
+    return render_template('create_automation.html')
+
+@app_blueprint.route('/view_automation')
+def view_automation():
+    config_files = [f for f in os.listdir("config_files") if f.endswith('.json')]
+    automations = []
+    for config_file in config_files:
+        with open(os.path.join("config_files", config_file), 'r') as f:
+            config_data = json.load(f)
+            automations.append({
+                'name': config_file[:-5],
+                'config': config_data
+            })
+    return render_template('view_automation.html', automations=automations)
+
+
+@app_blueprint.route('/poc_for_state', methods=['GET', 'POST'])
+def poc_for_state():
+    if request.method == 'POST':
+        try:
+            file = request.files['excel_file']
+            df = pd.read_excel(file)
+            session['poc_data'] = df.to_html(index=False, classes='table table-striped')
+            flash('Excel file imported successfully!')
+        except Exception as e:
+            flash(f'Error importing Excel file: {str(e)}')
+    return render_template('poc.html', poc_data=session.get('poc_data'))
 
 
 @app_blueprint.route('/update_config', methods=['GET', 'POST'])

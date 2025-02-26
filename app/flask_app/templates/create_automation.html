@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="content"  style="background-color: #f8f9fa;">
+    <h1>Create an Automation</h1>
+
+    <form method="POST">
+        <div class="card table-container">
+            <div class="form-container">  <div class="form-column">
+                    <div class="form-field">
+                        <label for="automation_name">Automation Name:</label>
+                        <input type="text" class="form-control" id="automation_name" name="automation_name" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="archival_process_name">Archival Process Name:</label>
+                        <input type="text" class="form-control" id="archival_process_name" name="archival_process_name" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="email_from">Email From:</label>
+                        <input type="email" class="form-control" id="email_from" name="email_from" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="email_to">Email To:</label>
+                        <input type="email" class="form-control" id="email_to" name="email_to" required>
+                    </div>
+                </div>
+                <div class="form-column">
+                    <div class="form-field">
+                        <label for="process_name">Process Name:</label>
+                        <input type="text" class="form-control" id="process_name" name="process_name" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="file_path">File Path:</label>
+                        <input type="text" class="form-control" id="file_path" name="file_path" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="archive_file_path">Archive File Path:</label>
+                        <input type="text" class="form-control" id="archive_file_path" name="archive_file_path" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="file_extension">File Extensions (comma-separated):</label>
+                        <input type="text" class="form-control" id="file_extension" name="file_extension" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="file_purge_days">Archive After (days):</label>
+                        <input type="number" class="form-control" id="file_purge_days" name="file_purge_days" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="archive_delete_days">Delete Archives After (days):</label>
+                        <input type="number" class="form-control" id="archive_delete_days" name="archive_delete_days" required>
+                    </div>
+                </div>
+            </div> <button type="submit" class="btn btn-primary">Create Automation</button>
+        </div>
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+</div>
+{% endblock %}
